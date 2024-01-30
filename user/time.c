@@ -5,48 +5,49 @@
 int
 main(int argc, char *argv[])
 {
-  int i;
-  int j;
 
 //   if(argc < 2){
 //     fprintf(2, "Usage: mkdir files...\n");
 //     exit(1);
 //   }
 
-    int ticksX;
-    int ticks1; 
-    int ticks2;
 
-    int pid = fork();
-    int ticks1 = ticks();
-
-
-    
-    for (int i = 2; i >= 0; i--) {
-        argv[i + 1] = argv[i];
+    if (argc == 1)
+    {
+        printf("Usage: time <command>\n");
+        exit(0);
     }
 
-    // Set the new first argument
-    argv[0] = "NewCommand";
-    
+
+    int ticksX = 0;
+    int ticks1 = 0; 
+    int ticks2 = 0;
+
+    int pid = fork();
+
+    for (int i = 0; i < argc; i++) {
+        argv[i] = argv[i+1];
+    }
+
+    ticks1 = ticks();
 
 
     if (pid == 0)
     {
-        exec("/bin/echo", argv);
-        ticks2 = ticks();
+        exec(argv[0], argv);
         exit(0);
     } else if (pid > 0) {
         wait(0);
-        ticks();
+        ticks2 = ticks();
     } else {
         printf("fork error\n");
+        exit(0);    
     }
+
 
     ticksX = ticks2 - ticks1;
 
-    printf("Real-time in ticks: %d", ticksX);
-
+    printf("Real-time in ticks: %d\n", ticksX);
 
   exit(0);
 }

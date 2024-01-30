@@ -102,16 +102,11 @@ sys_ticks(void)
   // release(&tickslock);
 
   // acquire(&tickslock);
-  // xticks2 = ticks;
+    const int xticks = ticks;
   // release(&tickslock);
 
   // xticks = xticks2 - xticks1;
 
-  uint xticks;
-
-  acquire(&tickslock);
-  xticks = ticks;
-  release(&tickslock);
   return xticks;
 
 }
