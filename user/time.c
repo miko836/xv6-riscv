@@ -6,12 +6,6 @@ int
 main(int argc, char *argv[])
 {
 
-//   if(argc < 2){
-//     fprintf(2, "Usage: mkdir files...\n");
-//     exit(1);
-//   }
-
-
     if (argc == 1)
     {
         printf("Usage: time <command>\n");
@@ -25,16 +19,11 @@ main(int argc, char *argv[])
 
     int pid = fork();
 
-    for (int i = 0; i < argc; i++) {
-        argv[i] = argv[i+1];
-    }
-
     ticks1 = ticks();
-
 
     if (pid == 0)
     {
-        exec(argv[0], argv);
+        exec(argv[1], argv+1);
         exit(0);
     } else if (pid > 0) {
         wait(0);
@@ -47,7 +36,7 @@ main(int argc, char *argv[])
 
     ticksX = ticks2 - ticks1;
 
-    printf("Real-time in ticks: %d\n", ticksX);
+    fprintf(2, "Real-time in ticks: %d\n", ticksX);
 
   exit(0);
 }

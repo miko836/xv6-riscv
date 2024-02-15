@@ -93,20 +93,21 @@ sys_uptime(void)
 uint64
 sys_ticks(void)
 {
-  // uint xticks1;
-  // uint xticks2;
-  // uint xticks;
-
-  // acquire(&tickslock);
-  // xticks1 = ticks;
-  // release(&tickslock);
-
-  // acquire(&tickslock);
-    const int xticks = ticks;
-  // release(&tickslock);
 
   // xticks = xticks2 - xticks1;
-
+  acquire(&tickslock);
+  const int xticks = ticks;
+  release(&tickslock);
   return xticks;
+
+}
+
+uint64
+sys_shprocs(void)
+{
+
+  shprocs();
+
+  return 0;
 
 }

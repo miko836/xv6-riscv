@@ -681,3 +681,42 @@ procdump(void)
     printf("\n");
   }
 }
+
+int
+shprocs(void){
+
+  struct proc *p;
+
+
+  static char *states[] = {
+  [UNUSED]    "UNUSED",
+  [USED]      "USED",
+  [SLEEPING]  "SLEEPING ",
+  [RUNNABLE]  "RUNNABLE",
+  [RUNNING]   "RUNNING",
+  [ZOMBIE]    "ZOMBIE"
+  };
+
+  char *state;
+
+  for(p = proc; p < &proc[NPROC]; p++){
+
+    acquire(&p->lock);
+
+    if (p->state == RUNNING || p->state == RUNNABLE || p->state == SLEEPING)
+    {
+
+      state = states[p->state];
+      printf("%s\t%d\t%s    \t%d\t%p\n", p->name, p->pid, state, p->sz, p->sz);
+
+
+    }
+
+    release(&p->lock);
+
+  }
+
+
+    return 0;
+
+}
