@@ -7,7 +7,7 @@
 #include "defs.h"
 
 
-int index;
+int index = 0;
 
 int proc32[32] = {-1};
 
@@ -289,7 +289,7 @@ fork(void)
   struct proc *np;
   struct proc *p = myproc();
 
-  p->token = 1
+  p->token = 1;
 
   // Allocate process.
   if((np = allocproc()) == 0){
@@ -701,7 +701,7 @@ schedDisp(uint64 addr)
 {
 
     
-
+  
 
 
 

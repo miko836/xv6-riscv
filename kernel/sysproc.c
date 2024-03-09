@@ -91,14 +91,11 @@ sys_uptime(void)
 }
 
 uint64
-sys_schedDisp(int addr[])
+sys_schedDisp(void)
 {
 
-  argaddr(0, &addr);
-
-  // schedDisp(addr)
-
-
-
-  copyout(p->pagetable_t)
+  uint64 p;
+  argaddr(0, &p);
+  return schedDisp(p);
+  
 }
