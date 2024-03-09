@@ -6,6 +6,12 @@
 #include "proc.h"
 #include "defs.h"
 
+
+int index;
+
+int proc32[32] = {-1};
+
+
 struct cpu cpus[NCPU];
 
 struct proc proc[NPROC];
@@ -283,6 +289,8 @@ fork(void)
   struct proc *np;
   struct proc *p = myproc();
 
+  p->token = 1
+
   // Allocate process.
   if((np = allocproc()) == 0){
     return -1;
@@ -458,6 +466,12 @@ scheduler(void)
         // Switch to chosen process.  It is the process's job
         // to release its lock and then reacquire it
         // before jumping back to us.
+
+        proc32[index] = p->pid;
+        index = (index + 1) % 32;  // Move index to the next position in the circular list
+
+
+
         p->state = RUNNING;
         c->proc = p;
         swtch(&c->context, &p->context);
@@ -680,4 +694,15 @@ procdump(void)
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
   }
+}
+
+void
+schedDisp(uint64 addr)
+{
+
+    
+
+
+
+
 }

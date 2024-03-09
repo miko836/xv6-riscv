@@ -89,3 +89,16 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+uint64
+sys_schedDisp(int addr[])
+{
+
+  argaddr(0, &addr);
+
+  // schedDisp(addr)
+
+
+
+  copyout(p->pagetable_t)
+}
