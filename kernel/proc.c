@@ -472,16 +472,12 @@ scheduler2(void)
         // before jumping back to us.
 
         proc32[index] = p->pid;
-        index = (index + 1) % 32;  // Move index to the next position in the circular list
-
-
+        index = (index + 1) % 32; 
 
         p->state = RUNNING;
         c->proc = p;
         swtch(&c->context, &p->context);
 
-        // Process is done running for now.
-        // It should have changed its p->state before coming back.
         c->proc = 0;
       }
       release(&p->lock);
@@ -718,8 +714,6 @@ schedDisp(uint64 addr)
 
 }
 
-
-
 void
 scheduler(void)
 {
@@ -732,6 +726,7 @@ scheduler(void)
     intr_on();
 
     int runnable_count = 0;
+
     // Count the number of RUNNABLE processes
     for(p = proc; p < &proc[NPROC]; p++) {
       acquire(&p->lock);
@@ -742,28 +737,27 @@ scheduler(void)
     }
 
     if (runnable_count > 0) {
-      // Generate a random number in the range [0, runnable_count)
-      int lottery = rand() % runnable_count;
 
+      // Generate a random number in the range [0, RUNNABLE processes)
+      int lottery = rand() % runnable_count;
       int ticket_count = 0;
-      // Iterate over processes to find the selected process
+
       for(p = proc; p < &proc[NPROC]; p++) {
         acquire(&p->lock);
         if(p->state == RUNNABLE) {
           if (ticket_count == lottery) {
-            // Switch to the selected process
+
             proc32[index] = p->pid;
-            index = (index + 1) % 32;  // Move index to the next position in the circular list
+            index = (index + 1) % 32;
 
             p->state = RUNNING;
             c->proc = p;
             swtch(&c->context, &p->context);
-
-            // Process is done running for now.
-            // It should have changed its p->state before coming back.
             release(&p->lock);
             c->proc = 0;
-            break; // Exit the loop after selecting the process
+
+            break; 
+
           }
           ticket_count++;
         }
