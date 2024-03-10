@@ -22,3 +22,4 @@
 #define SYS_close  21
 #define SYS_ticks  22
 #define SYS_shprocs 23
+#define SYS_schedDisp 24

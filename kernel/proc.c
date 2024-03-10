@@ -696,12 +696,18 @@ procdump(void)
   }
 }
 
-void
+int
 schedDisp(uint64 addr)
 {
-
     
-  
+     struct proc *p;
+
+      if(copyout(p->pagetable, proc32, (uint64 *)&addr, sizeof(addr)) < 0){
+        return -1;
+      }
+      else{
+        return proc32[index];
+      }
 
 
 

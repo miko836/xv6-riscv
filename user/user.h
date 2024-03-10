@@ -24,6 +24,7 @@ int sleep(int);
 int uptime(void);
 int ticks(void);
 int shprocs(void);
+int schedDisp(void);
 
 // ulib.c
 int stat(const char*, struct stat*);
