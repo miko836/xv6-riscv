@@ -8,8 +8,9 @@
 
 
 int index = 0;
-
 int proc32[32] = {-1};
+uint32 rand_next = 0;
+
 
 
 struct cpu cpus[NCPU];
@@ -699,16 +700,55 @@ procdump(void)
 int
 schedDisp(uint64 addr)
 {
-    
-     struct proc *p;
 
-      if(copyout(p->pagetable, proc32, (uint64 *)&addr, sizeof(addr)) < 0){
-        return -1;
-      }
-      else{
-        return proc32[index];
-      }
+  struct proc *p;
 
+    for (int i = 0; i < 32; i++) {
+        int pid = proc32[i];
+        if (copyout(p->pagetable, (uint64)addr + i*sizeof(int), (char *)&pid, sizeof(pid)) < 0) {
+            return -1; // Error occurred during copying
+        }
+    }
 
+    return 0; // Success
 
 }
+
+
+
+void
+scheduler2(void)
+{
+  struct proc *p;
+  struct cpu *c = mycpu();
+  int number_of_RUNNABLE_process = 0;
+  
+  c->proc = 0;
+  for(;;){
+    // Avoid deadlock by ensuring that devices can interrupt.
+    intr_on();
+
+    for(p = proc; p < &proc[NPROC]; p++) {
+      acquire(&p->lock);
+      if(p->state == RUNNABLE) {
+        // Switch to chosen process.  It is the process's job
+        // to release its lock and then reacquire it
+        // before jumping back to us.
+
+        number_of_RUNNABLE_process++;
+
+        proc32[index] = p->pid;
+        index = (index + 1) % 32;  // Move index to the next position in the circular list
+        p->state = RUNNING;
+        c->proc = p;
+        swtch(&c->context, &p->context);
+
+        // Process is done running for now.
+        // It should have changed its p->state before coming back.
+        c->proc = 0;
+      }
+      release(&p->lock);
+    }
+  }
+}
+
