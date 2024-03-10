@@ -26,24 +26,43 @@ int primeCount(){
 }
 
 int main(){
+
+    int pid = 0;
     printf("===== schTest ===== \nMAX_PROCESS=12, LIMIT=50000 \nParent process running. PID= %d\n", getpid());
-    for(int i=0; i<=MAX_PROCESS; i++){
-        int pid = fork();
+
+
+    for(int i=1; i<=MAX_PROCESS; i++){
+        pid = fork();
         if(pid == 0){
             //child process
-            int count= primeCount();
+            int count = primeCount();
             printf("Child process %d finished. PID=%d, Count=%d\n", i, getpid(), count);
             exit(0);
         }else if(pid<0){
              //error
-            perror("fork fail");
+            printf("fork fail");
             exit(1);
-        }else{
-            //parent process
-            wait(0);
-            printf(1, "PIDs of last 32 processes scheduled (most recent to least recent): %d\n", schedDisp());
         }
     }
+
+
+    while (wait(0) > 0);
+
+    printf("PIDs of last 32 processes scheduled (most recent to least recent): ");
+
+    int *addr = (int *)malloc(32 * sizeof(int));
+
+    int startIndex = schedDisp((uint64)addr);
+
+    for (int i = 31; i >= 0; i--) {
+        printf("%d ", addr[(startIndex + i) % 32]);
+    }
+
+    printf(" \n ");
+
+
+
+
     exit(0);
-    return 0;
+
 }

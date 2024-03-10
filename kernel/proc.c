@@ -22,8 +22,11 @@ struct proc *initproc;
 int nextpid = 1;
 struct spinlock pid_lock;
 
+int do_rand(uint32*);
+int rand(void);
 extern void forkret(void);
 static void freeproc(struct proc *p);
+// void scheduler(void);
 
 extern char trampoline[]; // trampoline.S
 
@@ -451,7 +454,7 @@ wait(uint64 addr)
 //  - eventually that process transfers control
 //    via swtch back to the scheduler.
 void
-scheduler(void)
+scheduler2(void)
 {
   struct proc *p;
   struct cpu *c = mycpu();
@@ -701,54 +704,109 @@ int
 schedDisp(uint64 addr)
 {
 
-  struct proc *p;
+  struct proc *p = myproc();
+  int pid = 0;
 
     for (int i = 0; i < 32; i++) {
-        int pid = proc32[i];
+        pid = proc32[i];
         if (copyout(p->pagetable, (uint64)addr + i*sizeof(int), (char *)&pid, sizeof(pid)) < 0) {
             return -1; // Error occurred during copying
         }
     }
 
-    return 0; // Success
+    return index; // Success
 
 }
 
 
 
 void
-scheduler2(void)
+scheduler(void)
 {
   struct proc *p;
   struct cpu *c = mycpu();
-  int number_of_RUNNABLE_process = 0;
   
   c->proc = 0;
   for(;;){
     // Avoid deadlock by ensuring that devices can interrupt.
     intr_on();
 
+    int runnable_count = 0;
+    // Count the number of RUNNABLE processes
     for(p = proc; p < &proc[NPROC]; p++) {
       acquire(&p->lock);
       if(p->state == RUNNABLE) {
-        // Switch to chosen process.  It is the process's job
-        // to release its lock and then reacquire it
-        // before jumping back to us.
-
-        number_of_RUNNABLE_process++;
-
-        proc32[index] = p->pid;
-        index = (index + 1) % 32;  // Move index to the next position in the circular list
-        p->state = RUNNING;
-        c->proc = p;
-        swtch(&c->context, &p->context);
-
-        // Process is done running for now.
-        // It should have changed its p->state before coming back.
-        c->proc = 0;
+        runnable_count++;
       }
       release(&p->lock);
+    }
+
+    if (runnable_count > 0) {
+      // Generate a random number in the range [0, runnable_count)
+      int lottery = rand() % runnable_count;
+
+      int ticket_count = 0;
+      // Iterate over processes to find the selected process
+      for(p = proc; p < &proc[NPROC]; p++) {
+        acquire(&p->lock);
+        if(p->state == RUNNABLE) {
+          if (ticket_count == lottery) {
+            // Switch to the selected process
+            proc32[index] = p->pid;
+            index = (index + 1) % 32;  // Move index to the next position in the circular list
+
+            p->state = RUNNING;
+            c->proc = p;
+            swtch(&c->context, &p->context);
+
+            // Process is done running for now.
+            // It should have changed its p->state before coming back.
+            release(&p->lock);
+            c->proc = 0;
+            break; // Exit the loop after selecting the process
+          }
+          ticket_count++;
+        }
+        release(&p->lock);
+      }
     }
   }
 }
 
+
+
+
+// from FreeBSD.
+int
+do_rand(uint32 *ctx)
+{
+/*
+ * Compute x = (7^5 * x) mod (2^31 - 1)
+ * without overflowing 31 bits:
+ *      (2^31 - 1) = 127773 * (7^5) + 2836
+ * From "Random number generators: good ones are hard to find",
+ * Park and Miller, Communications of the ACM, vol. 31, no. 10,
+ * October 1988, p. 1195.
+ */
+    long hi, lo, x;
+
+    /* Transform to [1, 0x7ffffffe] range. */
+    x = (*ctx % 0x7ffffffe) + 1;
+    hi = x / 127773;
+    lo = x % 127773;
+    x = 16807 * lo - 2836 * hi;
+    if (x < 0)
+        x += 0x7fffffff;
+    /* Transform to [0, 0x7ffffffd] range. */
+    x--;
+    *ctx = x;
+    return (x);
+}
+
+
+
+int
+rand(void)
+{
+    return (do_rand(&rand_next));
+}
