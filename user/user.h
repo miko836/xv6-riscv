@@ -22,6 +22,9 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
+int ticks(void);
+int shprocs(void);
+int schedDisp(uint64);
 
 // ulib.c
 int stat(const char*, struct stat*);

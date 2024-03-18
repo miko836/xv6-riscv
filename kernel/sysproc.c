@@ -89,3 +89,39 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+
+uint64
+sys_ticks(void)
+{
+
+  // xticks = xticks2 - xticks1;
+  acquire(&tickslock);
+  const int xticks = ticks;
+  release(&tickslock);
+  return xticks;
+
+}
+
+uint64
+sys_shprocs(void)
+{
+
+
+
+  //shprocs();
+
+  return 0;
+
+}
+
+uint64
+sys_schedDisp(void)
+{
+
+  uint64 p;
+  argaddr(0, &p);
+  return schedDisp(p);
+  
+}
+
