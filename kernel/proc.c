@@ -804,3 +804,15 @@ rand(void)
 {
     return (do_rand(&rand_next));
 }
+
+
+int prtpgtbl()
+{
+
+  struct proc *p = myproc();
+  printf("Current process page table 1:\npage table address: %p\n", p->pagetable);
+  printTable(p->pagetable, 0);
+
+  return 0;
+
+}

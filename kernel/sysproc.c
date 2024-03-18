@@ -125,3 +125,13 @@ sys_schedDisp(void)
   
 }
 
+uint64
+sys_prtpgtbl(void)
+{
+  
+  prtpgtbl();
+
+  return 0;
+
+}
+

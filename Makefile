@@ -136,6 +136,7 @@ UPROGS=\
 	$U/_time\
 	$U/_ps\
 	$U/_schTest\
+	$U/_ppt\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
