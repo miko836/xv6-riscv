@@ -128,10 +128,14 @@ sys_schedDisp(void)
 uint64
 sys_prtpgtbl(void)
 {
-  
-  prtpgtbl();
+
+
+  struct proc *p = myproc();
+  printf("Current process page table 1:\npage table address: %p\n", p->pagetable);
+  printTable(p->pagetable, 0);
 
   return 0;
 
 }
+
 
