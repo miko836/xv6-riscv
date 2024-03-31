@@ -104,6 +104,7 @@ extern uint64 sys_close(void);
 extern uint64 sys_ticks(void);
 extern uint64 sys_shprocs(void);
 extern uint64 sys_schedDisp(void);
+extern uint64 sys_prtpgtbl(void);
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
@@ -132,6 +133,7 @@ static uint64 (*syscalls[])(void) = {
 [SYS_ticks]   sys_ticks,
 [SYS_shprocs] sys_shprocs,
 [SYS_schedDisp] sys_schedDisp,
+[SYS_prtpgtbl] sys_prtpgtbl,
 };
 
 void

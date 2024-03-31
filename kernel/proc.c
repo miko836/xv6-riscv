@@ -804,3 +804,5 @@ rand(void)
 {
     return (do_rand(&rand_next));
 }
+
+

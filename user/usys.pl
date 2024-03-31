@@ -39,3 +39,4 @@ entry("uptime");
 entry("ticks");
 entry("shprocs");
 entry("schedDisp");
+entry("prtpgtbl");
